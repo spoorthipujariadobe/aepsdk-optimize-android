@@ -192,7 +192,7 @@ To use Target Third Party ID in the Experience Edge mobile workflows, the corres
 
 ![Target Third Party ID configuration](./assets/ajo-decisioning-target-tpid.png)
 
-In your mobile application, integrate the Identity for Edge Network extension to add the Target Third Party ID in the Identity Map in the personalization query request to the Edge network when calling the `updatePropositions` API. For more details, see the [Identity for Edge Network - updateIdentities API](https://developer.adobe.com/client-sdks/documentation/identity-for-edge-network/api-reference/#updateidentities).
+In your mobile application, integrate the Identity for Edge Network extension to add the Target Third Party ID in the Identity Map in the personalization query request to the Edge network when calling the `updatePropositions` API. For more details, see the [Identity for Edge Network - updateIdentities API](https://github.com/adobe/aepsdk-edgeidentity-android).
  
 #### Java
 
