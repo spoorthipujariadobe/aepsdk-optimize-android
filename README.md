@@ -3,14 +3,9 @@
 ## About this project
 The AEP Optimize mobile SDK Extension provides APIs to enable real-time personalization workflows in the Adobe Experience Platform SDKs using Adobe Target or Adobe Journey Optimizer Offer Decisioning. It depends on the Mobile Core and requires Edge Extension to send personalization query events to the Experience Edge network.
 
-## Installation
-Integrate the Optimize extension into your app by including the following lines in your gradle file's `dependencies`:
+## Getting started
 
-```
-implementation 'com.adobe.marketing.mobile:optimize:1.+'
-implementation 'com.adobe.marketing.mobile:edge:1.+'
-implementation 'com.adobe.marketing.mobile:core:1.+'
-```
+Refer to the [getting started](./Documentation/getting-started.md) guide for setting up and using the SDK with your application.
 
 ### Development
 
@@ -21,11 +16,18 @@ To open and run the project, open the `code/build.gradle` file in Android Studio
 **Run demo application**
 Once you open the project in Android Studio (see above), select the `app` runnable and your favorite emulator and run the program.
 
+## Documentation
+
+Additional documentation about API usage and SDK architecture can be found under the [Documentation](./Documentation) directory.
+
 ## Related Projects
 
 | Project                                                      | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | [AEP SDK Sample App for Android](https://github.com/adobe/aepsdk-sample-app-android) | Contains Android sample app for the AEP SDK. |
+| [Core extensions](https://github.com/adobe/aepsdk-core-android)                                    | The Mobile Core represents the foundation of the Experience Platform Mobile SDK. |
+| [Adobe Experience Platform Edge Network Mobile Extension](https://github.com/adobe/aepsdk-edge-android) | The Adobe Experience Platform Edge Network mobile extension allows you to send data to the Experience Platform Edge Network from a mobile application. |
+| [Identity for Edge Network extension](https://github.com/adobe/aepsdk-edgeidentity-android)        | The Identity for Edge Network extension enables handling of user identity data from a mobile app when using the Experience Platform Mobile SDK and the Edge Network extension. |
 
 ## Contributing
 Contributions are welcomed! Read the [CONTRIBUTING](.github/CONTRIBUTING.md) for more information.

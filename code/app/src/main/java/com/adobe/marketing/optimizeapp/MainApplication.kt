@@ -31,14 +31,14 @@ class MainApplication : Application() {
         MobileCore.setApplication(this)
         MobileCore.setLogLevel(LoggingMode.VERBOSE)
 
-        Identity.registerExtension()
-        Lifecycle.registerExtension()
-        Edge.registerExtension()
-        Optimize.registerExtension()
-        Assurance.registerExtension()
-
         MobileCore.configureWithAppID(LAUNCH_ENVIRONMENT_FILE_ID)
-        MobileCore.start {
+        MobileCore.registerExtensions(listOf(
+            Identity.EXTENSION,
+            Lifecycle.EXTENSION,
+            Edge.EXTENSION,
+            Optimize.EXTENSION,
+            Assurance.EXTENSION
+        )) {
             print("Adobe mobile SDKs are successfully registered.")
         }
     }

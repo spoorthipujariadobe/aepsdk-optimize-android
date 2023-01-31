@@ -107,7 +107,7 @@ publishing {
             pom {
                 name = mavenRepoName
                 description = mavenRepoDescription
-                url = 'https://aep-sdks.gitbook.io'
+                url = 'https://developer.adobe.com/client-sdks'
                 licenses {
                     license {
                         name = 'Adobe Proprietary'
@@ -122,8 +122,8 @@ publishing {
                 }
                 scm {
                     connection = 'scm:git:github.com//Adobe-Marketing-Cloud/acp-sdks.git'
-                    developerConnection = 'scm:git:ssh://github.com//Adobe-Marketing-Cloud/acp-sdks.git'
-                    url = 'https://github.com/Adobe-Marketing-Cloud/acp-sdks'
+                    developerConnection = 'scm:git:ssh://github.com/adobe/aepsdk-optimize-android.git'
+                    url = 'https://github.com/adobe/aepsdk-optimize-android'
                 }
                 withXml {
                     def dependenciesNode = asNode().appendNode('dependencies')
@@ -205,8 +205,7 @@ task platformFunctionalTestJacocoReport(type: JacocoReport, dependsOn: "createPh
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.5.1'
 
-    // todo change Adobe Mobile SDK Core
-    implementation 'com.adobe.marketing.mobile:core:2.0.0-SNAPSHOT'
+    implementation 'com.adobe.marketing.mobile:core:2.0.0'
 
     testImplementation "androidx.test.ext:junit:${rootProject.ext.junitVersion}"
     testImplementation "org.mockito:mockito-core:${rootProject.ext.mockitoCoreVersion}"
@@ -217,9 +216,12 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:${rootProject.ext.junitVersion}"
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     androidTestImplementation 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
-    // todo verify if we really need these
-    // androidTestImplementation files('../libs/edge-release-2.0.0.aar')
-    // androidTestImplementation files('../libs/edgeidentity-release-2.0.0.aar')
+    androidTestImplementation ('com.adobe.marketing.mobile:edge:2.0.0-SNAPSHOT'){
+        transitive = false
+    }
+    androidTestImplementation ('com.adobe.marketing.mobile:edgeidentity:2.0.0-SNAPSHOT'){
+        transitive = false
+    }
 }
 
 tasks.withType(Test) {

@@ -66,25 +66,20 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation "androidx.compose.runtime:runtime-livedata:1.4.0-alpha02"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0-alpha03"
+    implementation("io.coil-kt:coil-compose:1.3.2")
 
     // Adobe mobile SDKs
+    // todo change versions before final release
     implementation project(":optimize")
-    implementation 'com.github.adobe.aepsdk-core-android:core:dev-v2.0.0-SNAPSHOT'
-    implementation ('com.github.adobe.aepsdk-core-android:lifecycle:dev-v2.0.0-SNAPSHOT'){
+    implementation 'com.adobe.marketing.mobile:core:2.0.0'
+    implementation 'com.adobe.marketing.mobile:lifecycle:2.0.0'
+    implementation ('com.adobe.marketing.mobile:assurance:2.0.0-SNAPSHOT'){
         transitive = false
     }
-    implementation ('com.github.adobe.aepsdk-core-android:signal:dev-v2.0.0-SNAPSHOT'){
+    implementation ('com.adobe.marketing.mobile:edge:2.0.0-SNAPSHOT'){
         transitive = false
     }
-    implementation("com.adobe.marketing.mobile:edge:1.+"){
+    implementation ('com.adobe.marketing.mobile:edgeidentity:2.0.0-SNAPSHOT'){
         transitive = false
     }
-    implementation("com.adobe.marketing.mobile:edgeidentity:1.+"){
-        transitive = false
-    }
-    implementation ("com.adobe.marketing.mobile:assurance:1.+"){
-        transitive = false
-    }
-
-    implementation("io.coil-kt:coil-compose:1.3.2")
 }

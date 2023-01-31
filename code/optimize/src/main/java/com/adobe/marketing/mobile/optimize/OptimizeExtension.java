@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 class OptimizeExtension extends Extension {
@@ -116,6 +117,17 @@ class OptimizeExtension extends Extension {
     @Override
     protected String getVersion() {
         return OptimizeConstants.EXTENSION_VERSION;
+    }
+
+    /**
+     * Retrieve the friendly name.
+     *
+     * @return {@link String} containing the friendly name for this extension.
+     */
+    @Nullable
+    @Override
+    protected String getFriendlyName() {
+        return OptimizeConstants.FRIENDLY_NAME;
     }
 
     /**
