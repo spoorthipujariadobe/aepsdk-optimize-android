@@ -164,6 +164,9 @@ Optimize.registerExtension();
 
 This MobileCore API is a request to each extension to reset its identities. Every extension responds to this request in its own unique manner. For example, Optimize extension uses this API call to clear out its client-side in-memory propositions cache. For details, see [Mobile Core - API reference](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/MobileCore/api-reference.md).
 
+> **Warning
+> This API call can lead to unintended SDK behavior, e.g. resetting of Experience Cloud ID (ECID). So it should be sparingly used and extreme caution should be followed!
+
 ## updatePropositions
 
 This API dispatches an Event for the Edge network extension to fetch decision propositions, for the provided decision scopes array, from the decisioning services enabled in the Experience Edge. The returned decision propositions are cached in-memory in the Optimize SDK extension and can be retrieved using `getPropositions` API.
