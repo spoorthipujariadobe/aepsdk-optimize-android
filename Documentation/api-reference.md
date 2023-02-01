@@ -141,6 +141,9 @@ Optimize.onPropositionsUpdate(new AdobeCallbackWithError<Map<DecisionScope, Prop
 
 ## registerExtension
 
+> **Warning**
+> This API is deprecated from version 2.0.0. Please use Mobile Core's [registerExtensions](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/MobileCore/api-reference.md) API instead.
+
 This API can be invoked to register the Optimize extension with the Mobile Core.
 
 ### Java
@@ -159,8 +162,7 @@ Optimize.registerExtension();
 
 ## resetIdentities
 
-This `MobileCore` API can also be invoked to clear out the client-side data for the Optimize extension, such as the in-memory propositions cache.
-For details on syntax, usage and availability, refer to [Mobile Core - Reset identities](https://github.com/adobe/aepsdk-core-android).
+This MobileCore API is a request to each extension to reset its identities. Every extension responds to this request in its own unique manner. For example, Optimize extension uses this API call to clear out its client-side in-memory propositions cache. For details, see [Mobile Core - API reference](https://github.com/adobe/aepsdk-core-android/blob/main/Documentation/MobileCore/api-reference.md).
 
 ## updatePropositions
 

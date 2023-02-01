@@ -49,6 +49,9 @@ implementation 'com.adobe.marketing.mobile:edgeidentity:2.+'
 implementation 'com.adobe.marketing.mobile:optimize:2.+'
 ```
 
+> **Warning**
+> Using dynamic dependency versions is not recommended for production apps. Refer to this page for managing gradle dependencies.
+
 ### Register the extensions with Mobile Core
 
 #### Java

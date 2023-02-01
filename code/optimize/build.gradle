@@ -203,7 +203,7 @@ task platformFunctionalTestJacocoReport(type: JacocoReport, dependsOn: "createPh
 
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.annotation:annotation:1.0.0'
 
     implementation 'com.adobe.marketing.mobile:core:2.0.0'
 
@@ -216,12 +216,8 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:${rootProject.ext.junitVersion}"
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     androidTestImplementation 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
-    androidTestImplementation ('com.adobe.marketing.mobile:edge:2.0.0-SNAPSHOT'){
-        transitive = false
-    }
-    androidTestImplementation ('com.adobe.marketing.mobile:edgeidentity:2.0.0-SNAPSHOT'){
-        transitive = false
-    }
+    androidTestImplementation 'com.adobe.marketing.mobile:edge:2.0.0'
+    androidTestImplementation 'com.adobe.marketing.mobile:edgeidentity:2.0.0'
 }
 
 tasks.withType(Test) {

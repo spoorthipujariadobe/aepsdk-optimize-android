@@ -1,4 +1,4 @@
-# Campaign Classic extension documentation
+# Adobe Journey Optimizer - Decisioning extension documentation
 
 ## Contents
 - [Getting started](getting-started.md)
