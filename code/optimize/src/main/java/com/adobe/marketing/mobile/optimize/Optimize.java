@@ -179,8 +179,7 @@ public class Optimize {
                         return;
                     }
 
-                    if (eventData.containsKey(OptimizeConstants.EventDataKeys.RESPONSE_ERROR)
-                            && DataReader.getBoolean(eventData, OptimizeConstants.EventDataKeys.RESPONSE_ERROR)) {
+                    if (DataReader.optInt(eventData, OptimizeConstants.EventDataKeys.RESPONSE_ERROR, -1) == 0) {
                         failWithError(callback, AdobeError.UNEXPECTED_ERROR);
                         return;
                     }

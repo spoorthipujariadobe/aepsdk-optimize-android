@@ -505,7 +505,7 @@ class OptimizeExtension extends Extension {
      */
     private Event createResponseEventWithError(final Event event) {
         final Map<String, Object> eventData = new HashMap<>();
-        eventData.put(OptimizeConstants.EventDataKeys.RESPONSE_ERROR, true);
+        eventData.put(OptimizeConstants.EventDataKeys.RESPONSE_ERROR, 0);
 
         return new Event.Builder(OptimizeConstants.EventNames.OPTIMIZE_RESPONSE,
                 OptimizeConstants.EventType.OPTIMIZE,

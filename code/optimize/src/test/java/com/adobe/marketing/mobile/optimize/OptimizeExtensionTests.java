@@ -1208,7 +1208,7 @@ public class OptimizeExtensionTests {
             final List<Map<String, Object>> propositionsList = (List<Map<String, Object>>) dispatchedEvent.getEventData().get("propositions");
             Assert.assertNull(propositionsList);
 
-            Assert.assertTrue((Boolean) dispatchedEvent.getEventData().get("responseerror"));
+            Assert.assertEquals(0, dispatchedEvent.getEventData().get("responseerror"));
         }
     }
 
