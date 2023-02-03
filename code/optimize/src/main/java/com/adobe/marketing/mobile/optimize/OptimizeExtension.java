@@ -12,6 +12,7 @@
 
 package com.adobe.marketing.mobile.optimize;
 
+import com.adobe.marketing.mobile.AdobeError;
 import com.adobe.marketing.mobile.Event;
 import com.adobe.marketing.mobile.Extension;
 import com.adobe.marketing.mobile.ExtensionApi;
@@ -28,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 class OptimizeExtension extends Extension {
@@ -114,6 +114,7 @@ class OptimizeExtension extends Extension {
      *
      * @return {@link String} containing the current installed version of this extension.
      */
+    @NonNull
     @Override
     protected String getVersion() {
         return OptimizeConstants.EXTENSION_VERSION;
@@ -124,7 +125,7 @@ class OptimizeExtension extends Extension {
      *
      * @return {@link String} containing the friendly name for this extension.
      */
-    @Nullable
+    @NonNull
     @Override
     protected String getFriendlyName() {
         return OptimizeConstants.FRIENDLY_NAME;
@@ -137,8 +138,8 @@ class OptimizeExtension extends Extension {
      *
      * @param event incoming {@link Event} object to be processed.
      */
-    void handleOptimizeRequestContent(final Event event) {
-        if (event == null || OptimizeUtils.isNullOrEmpty(event.getEventData())) {
+    void handleOptimizeRequestContent(@NonNull final Event event) {
+        if (OptimizeUtils.isNullOrEmpty(event.getEventData())) {
             Log.debug(OptimizeConstants.LOG_TAG, SELF_TAG,
                     "handleOptimizeRequestContent - Ignoring the Optimize request event, either event is null or event data is null/ empty.");
             return;
@@ -253,8 +254,8 @@ class OptimizeExtension extends Extension {
      *
      * @param event incoming {@link Event} object to be processed.
      */
-    void handleEdgeResponse(final Event event) {
-        if (event == null || OptimizeUtils.isNullOrEmpty(event.getEventData())) {
+    void handleEdgeResponse(@NonNull final Event event) {
+        if (OptimizeUtils.isNullOrEmpty(event.getEventData())) {
             Log.debug(OptimizeConstants.LOG_TAG, SELF_TAG,
                     "handleEdgeResponse - Ignoring the Edge personalization:decisions event, either event is null or event data is null/ empty.");
             return;
@@ -322,8 +323,8 @@ class OptimizeExtension extends Extension {
      *
      * @param event incoming {@link Event} object to be processed.
      */
-    void handleEdgeErrorResponse(final Event event) {
-        if (event == null || OptimizeUtils.isNullOrEmpty(event.getEventData())) {
+    void handleEdgeErrorResponse(@NonNull final Event event) {
+        if (OptimizeUtils.isNullOrEmpty(event.getEventData())) {
             Log.debug(OptimizeConstants.LOG_TAG, SELF_TAG,
                     "handleEdgeErrorResponse - Ignoring the Edge error response event, either event is null or event data is null/ empty.");
             return;
@@ -347,14 +348,14 @@ class OptimizeExtension extends Extension {
      */
     void handleGetPropositions(@NonNull final Event event) {
         final Map<String, Object> eventData = event.getEventData();
-
+        
         try {
             final List<Map<String, Object>> decisionScopesData = DataReader.getTypedListOfMap(Object.class, eventData, OptimizeConstants.EventDataKeys.DECISION_SCOPES);
             final List<String> validScopeNames = retrieveValidDecisionScopes(decisionScopesData);
             if (OptimizeUtils.isNullOrEmpty(validScopeNames)) {
                 Log.debug(OptimizeConstants.LOG_TAG, SELF_TAG,
                         "handleGetPropositions - Cannot process the get propositions request event, provided list of decision scopes has no valid scope.");
-                getApi().dispatch(createResponseEventWithError(event));
+                getApi().dispatch(createResponseEventWithError(event, AdobeError.UNEXPECTED_ERROR));
                 return;
             }
 
@@ -382,6 +383,7 @@ class OptimizeExtension extends Extension {
         } catch (final Exception e) {
             Log.warning(OptimizeConstants.LOG_TAG, SELF_TAG,
                     "handleGetPropositions - Failed to process get propositions request event due to an exception (%s)!", e.getLocalizedMessage());
+            getApi().dispatch(createResponseEventWithError(event, AdobeError.UNEXPECTED_ERROR));
         }
     }
 
@@ -444,12 +446,7 @@ class OptimizeExtension extends Extension {
      *
      * @param event incoming {@link Event} object to be processed.
      */
-    void handleClearPropositions(final Event event) {
-        if (event == null) {
-            Log.debug(OptimizeConstants.LOG_TAG, SELF_TAG,
-                    "handleClearPropositions - Cannot clear cached propositions, incoming event is null.");
-            return;
-        }
+    void handleClearPropositions(@NonNull final Event event) {
         cachedPropositions.clear();
     }
 
@@ -507,9 +504,9 @@ class OptimizeExtension extends Extension {
      *
      * @return {@link Event} instance.
      */
-    private Event createResponseEventWithError(final Event event) {
+    private Event createResponseEventWithError(final Event event, final AdobeError error) {
         final Map<String, Object> eventData = new HashMap<>();
-        eventData.put(OptimizeConstants.EventDataKeys.RESPONSE_ERROR, true);
+        eventData.put(OptimizeConstants.EventDataKeys.RESPONSE_ERROR, error.getErrorCode());
 
         return new Event.Builder(OptimizeConstants.EventNames.OPTIMIZE_RESPONSE,
                 OptimizeConstants.EventType.OPTIMIZE,

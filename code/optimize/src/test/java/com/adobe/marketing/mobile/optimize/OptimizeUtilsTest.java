@@ -14,6 +14,8 @@ package com.adobe.marketing.mobile.optimize;
 
 import android.util.Base64;
 
+import com.adobe.marketing.mobile.AdobeError;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -143,5 +145,19 @@ public class OptimizeUtilsTest {
             final String input = "VGhp=";
             Assert.assertNull(OptimizeUtils.base64Decode(input));
         }
+    }
+
+    @Test
+    public void testConvertToAdobeError_knownErrorCode() {
+        Assert.assertEquals(AdobeError.UNEXPECTED_ERROR, OptimizeUtils.convertToAdobeError(0));
+        Assert.assertEquals(AdobeError.CALLBACK_TIMEOUT, OptimizeUtils.convertToAdobeError(1));
+        Assert.assertEquals(AdobeError.CALLBACK_NULL, OptimizeUtils.convertToAdobeError(2));
+        Assert.assertEquals(AdobeError.EXTENSION_NOT_INITIALIZED, OptimizeUtils.convertToAdobeError(11));
+    }
+
+
+    @Test
+    public void testConvertToAdobeError_unknownErrorCode() {
+        Assert.assertEquals(AdobeError.UNEXPECTED_ERROR, OptimizeUtils.convertToAdobeError(123));
     }
 }

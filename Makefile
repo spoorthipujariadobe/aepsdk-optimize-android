@@ -19,7 +19,7 @@ clean:
 	(./code/gradlew -p code clean)
 	
 checkstyle:
-	(./code/gradlew -p code/optimize checkstyle)
+	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) checkstyle)
 
 ci-build: create-ci
 	(mkdir -p ci/assemble)
