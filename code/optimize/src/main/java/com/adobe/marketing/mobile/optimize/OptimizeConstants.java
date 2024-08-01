@@ -129,6 +129,7 @@ class OptimizeConstants {
         static final String PAYLOAD_ITEM_DATA_CONTENT = "content";
         static final String PAYLOAD_ITEM_DATA_DELIVERYURL = "deliveryURL";
         static final String PAYLOAD_ITEM_DATA_FORMAT = "format";
+        static final String PAYLOAD_ITEM_DATA_TYPE = "type";
         static final String PAYLOAD_ITEM_DATA_LANGUAGE = "language";
         static final String PAYLOAD_ITEM_DATA_CHARACTERISTICS = "characteristics";
 

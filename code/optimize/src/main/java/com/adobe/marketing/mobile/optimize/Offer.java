@@ -16,6 +16,8 @@ import com.adobe.marketing.mobile.MobileCore;
 import com.adobe.marketing.mobile.services.Log;
 import com.adobe.marketing.mobile.util.DataReader;
 import com.adobe.marketing.mobile.util.DataReaderException;
+import com.adobe.marketing.mobile.util.StringUtils;
+
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -432,6 +434,7 @@ public class Offer {
      * @param data {@code Map<String, Object>} containing offer data.
      * @return {@code Offer} object or null.
      */
+    // todo check parity of this with iOS
     static Offer fromEventData(final Map<String, Object> data) {
         if (OptimizeUtils.isNullOrEmpty(data)) {
             Log.debug(
@@ -448,6 +451,8 @@ public class Offer {
                     DataReader.getString(data, OptimizeConstants.JsonKeys.PAYLOAD_ITEM_ETAG);
             final int score =
                     DataReader.optInt(data, OptimizeConstants.JsonKeys.PAYLOAD_ITEM_SCORE, 0);
+
+            // todo: check if schema is mandatory
             final String schema =
                     DataReader.getString(data, OptimizeConstants.JsonKeys.PAYLOAD_ITEM_SCHEMA);
 
@@ -461,7 +466,7 @@ public class Offer {
 
             if (!OptimizeUtils.isNullOrEmpty(offerData)) {
                 final String nestedId =
-                        (String) offerData.get(OptimizeConstants.JsonKeys.PAYLOAD_ITEM_DATA_ID);
+                        DataReader.getString(offerData, OptimizeConstants.JsonKeys.PAYLOAD_ITEM_DATA_ID);
                 if (OptimizeUtils.isNullOrEmpty(id) || !id.equals(nestedId)) {
                     Log.debug(
                             OptimizeConstants.LOG_TAG,
@@ -472,14 +477,15 @@ public class Offer {
                 }
 
                 final String format =
-                        (String) offerData.get(OptimizeConstants.JsonKeys.PAYLOAD_ITEM_DATA_FORMAT);
-                if (OptimizeUtils.isNullOrEmpty(format)) {
-                    Log.debug(
-                            OptimizeConstants.LOG_TAG,
-                            SELF_TAG,
-                            "Cannot create Offer object, provided data Map doesn't contain valid"
-                                    + " item data format.");
-                    return null;
+                        DataReader.getString(offerData, OptimizeConstants.JsonKeys.PAYLOAD_ITEM_DATA_FORMAT);
+
+                // todo can be simplified to OfferType.from(format)
+                final OfferType offerType;
+                if (format != null) {
+                    offerType = OfferType.from(format);
+                } else {
+                    final String type = DataReader.optString(offerData, OptimizeConstants.JsonKeys.PAYLOAD_ITEM_DATA_TYPE, null);
+                    offerType = type == null ? OfferType.UNKNOWN : OfferType.from(type);
                 }
 
                 final List<String> language =
@@ -496,10 +502,7 @@ public class Offer {
                 } else if (offerData.containsKey(
                         OptimizeConstants.JsonKeys.PAYLOAD_ITEM_DATA_DELIVERYURL)) {
                     content =
-                            (String)
-                                    offerData.get(
-                                            OptimizeConstants.JsonKeys
-                                                    .PAYLOAD_ITEM_DATA_DELIVERYURL);
+                            DataReader.optString(offerData, OptimizeConstants.JsonKeys.PAYLOAD_ITEM_DATA_DELIVERYURL, null);
                 }
                 if (content == null) {
                     Log.debug(
@@ -510,7 +513,7 @@ public class Offer {
                     return null;
                 }
 
-                return new Builder(id, OfferType.from(format), content)
+                return new Builder(id, offerType, content)
                         .setEtag(etag)
                         .setScore(score)
                         .setSchema(schema)
@@ -564,8 +567,8 @@ public class Offer {
         offerMap.put(OptimizeConstants.JsonKeys.PAYLOAD_ITEM_META, this.meta);
 
         final Map<String, Object> data = new HashMap<>();
-        data.put(OptimizeConstants.JsonKeys.PAYLOAD_ITEM_ID, this.id);
-        data.put(OptimizeConstants.JsonKeys.PAYLOAD_ITEM_DATA_FORMAT, this.type.toString());
+        data.put(OptimizeConstants.JsonKeys.PAYLOAD_ITEM_DATA_ID, this.id);
+        data.put(OptimizeConstants.JsonKeys.PAYLOAD_ITEM_DATA_TYPE, this.type.toString());
         data.put(OptimizeConstants.JsonKeys.PAYLOAD_ITEM_DATA_CONTENT, this.content);
         data.put(OptimizeConstants.JsonKeys.PAYLOAD_ITEM_DATA_LANGUAGE, this.language);
         data.put(
@@ -600,6 +603,7 @@ public class Offer {
         return Objects.hash(id, etag, score, schema, type, language, content, characteristics);
     }
 
+    // todo verify this logic with iOS
     private static String getContentFromOfferData(final Map<String, Object> offerData) {
         final String content;
         final Object offerContent =

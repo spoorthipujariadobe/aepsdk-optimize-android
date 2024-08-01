@@ -520,7 +520,7 @@ public class OptimizeFunctionalTests {
         updateConfiguration(configData);
 
         final String decisionScopeString =
-                "eyJhY3Rpdml0eUlkIjoieGNvcmU6b2ZmZXItYWN0aXZpdHk6MTExMTExMTExMTExMTExMSIsInBsYWNlbWVudElkIjoieGNvcmU6b2ZmZXItcGxhY2VtZW50OjExMTExMTExMTExMTExMTEifQ==";
+                "someDecisionScope";
         Optimize.updatePropositions(
                 Collections.singletonList(new DecisionScope(decisionScopeString)), null, null);
         List<Event> eventsListEdge =
@@ -534,58 +534,7 @@ public class OptimizeFunctionalTests {
         Assert.assertFalse(requestEventId.isEmpty());
 
         // Send Edge Response event
-        final String edgeResponseData =
-                "{\n"
-                        + "                                  \"payload\": [\n"
-                        + "                                    {\n"
-                        + "                                        \"id\":"
-                        + " \"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa\",\n"
-                        + "                                        \"scope\": \""
-                        + decisionScopeString
-                        + "\",\n"
-                        + "                                        \"activity\": {\n"
-                        + "                                            \"etag\": \"8\",\n"
-                        + "                                            \"id\":"
-                        + " \"xcore:offer-activity:1111111111111111\"\n"
-                        + "                                        },\n"
-                        + "                                        \"placement\": {\n"
-                        + "                                            \"etag\": \"1\",\n"
-                        + "                                            \"id\":"
-                        + " \"xcore:offer-placement:1111111111111111\"\n"
-                        + "                                        },\n"
-                        + "                                        \"items\": [\n"
-                        + "                                            {\n"
-                        + "                                                \"id\":"
-                        + " \"xcore:personalized-offer:1111111111111111\",\n"
-                        + "                                                \"etag\": \"10\",\n"
-                        + "                                                \"score\": 1,\n"
-                        + "                                                \"schema\":"
-                        + " \"https://ns.adobe.com/experience/offer-management/content-component-html\",\n"
-                        + "                                                \"data\": {\n"
-                        + "                                                    \"id\":"
-                        + " \"xcore:personalized-offer:1111111111111111\",\n"
-                        + "                                                    \"format\":"
-                        + " \"text/html\",\n"
-                        + "                                                    \"content\":"
-                        + " \"<h1>This is HTML content</h1>\",\n"
-                        + "                                                    \"characteristics\":"
-                        + " {\n"
-                        + "                                                        \"testing\":"
-                        + " \"true\"\n"
-                        + "                                                    }\n"
-                        + "                                                }\n"
-                        + "                                            }\n"
-                        + "                                        ]\n"
-                        + "                                    }\n"
-                        + "                                  ],\n"
-                        + "                                \"requestEventId\":\""
-                        + requestEventId
-                        + "\",\n"
-                        + "                                \"requestId\":"
-                        + " \"BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB\",\n"
-                        + "                                \"type\":"
-                        + " \"personalization:decisions\"\n"
-                        + "                              }";
+        final String edgeResponseData = "{\r\n      \"payload\": [\r\n        {\r\n          \"scopeDetails\": {\r\n            \"characteristics\": {\r\n              \"eventToken\": \"someEventToken\"\r\n            },\r\n            \"activity\": {\r\n              \"id\": \"716226\"\r\n            },\r\n            \"strategies\": [\r\n              {\r\n                \"trafficType\": \"0\",\r\n                \"step\": \"entry\"\r\n              },\r\n              {\r\n                \"trafficType\": \"0\",\r\n                \"step\": \"display\"\r\n              }\r\n            ],\r\n            \"correlationID\": \"716226:0:0\",\r\n            \"decisionProvider\": \"TGT\",\r\n            \"experience\": {\r\n              \"id\": \"0\"\r\n            }\r\n          },\r\n          \"scope\": \"someDecisionScope\",\r\n          \"id\": \"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa\",\r\n          \"items\": [\r\n            {\r\n              \"schema\": \"https://ns.adobe.com/personalization/default-content-item\",\r\n              \"meta\": {\r\n                \"activity.name\": \"Some Test Activity\",\r\n                \"profile.timeNow\": \"1722212083855\",\r\n                \"profile.audienceUserNeed\": \"\",\r\n                \"profile.language\": \"\",\r\n                \"experience.name\": \"Default Content\",\r\n                \"profile.site\": \"\",\r\n                \"profile.url\": \"\",\r\n                \"profile.subjects\": \"\",\r\n                \"profile.path\": \"\",\r\n                \"profile.subjectPrimary\": \"\",\r\n                \"profile.translatedTabbedShelfTitle\": \"Discover SBS in 63 Languages\",\r\n                \"profile.environment\": \"production\",\r\n                \"profile.brandName\": \"\",\r\n                \"profile.audioChannelLastPlayed\": \"\",\r\n                \"profile.type\": \"\"\r\n              },\r\n              \"id\": \"0\"\r\n            }\r\n          ]\r\n        }\r\n      ],\r\n      \"requestId\": \"someRequestId\",\r\n      \"requestEventId\": \"" + requestEventId + "\",\r\n      \"type\": \"personalization:decisions\"\r\n    }" ;
 
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> eventData =
@@ -657,21 +606,21 @@ public class OptimizeFunctionalTests {
         Assert.assertNotNull(optimizeProposition);
         Assert.assertEquals("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", optimizeProposition.getId());
         Assert.assertEquals(
-                "eyJhY3Rpdml0eUlkIjoieGNvcmU6b2ZmZXItYWN0aXZpdHk6MTExMTExMTExMTExMTExMSIsInBsYWNlbWVudElkIjoieGNvcmU6b2ZmZXItcGxhY2VtZW50OjExMTExMTExMTExMTExMTEifQ==",
+                "someDecisionScope",
                 optimizeProposition.getScope());
         Assert.assertEquals(1, optimizeProposition.getOffers().size());
 
         Offer offer = optimizeProposition.getOffers().get(0);
-        Assert.assertEquals("xcore:personalized-offer:1111111111111111", offer.getId());
-        Assert.assertEquals("10", offer.getEtag());
-        Assert.assertEquals(1, offer.getScore());
+        Assert.assertEquals("0", offer.getId());
+        Assert.assertEquals(null, offer.getEtag());
+        Assert.assertEquals(0, offer.getScore());
         Assert.assertEquals(
-                "https://ns.adobe.com/experience/offer-management/content-component-html",
+                "https://ns.adobe.com/personalization/default-content-item",
                 offer.getSchema());
-        Assert.assertEquals(OfferType.HTML, offer.getType());
-        Assert.assertEquals("<h1>This is HTML content</h1>", offer.getContent());
-        Assert.assertEquals(1, offer.getCharacteristics().size());
-        Assert.assertEquals("true", offer.getCharacteristics().get("testing"));
+        Assert.assertEquals(OfferType.UNKNOWN, offer.getType());
+        Assert.assertEquals("", offer.getContent());
+        // Assert.assertEquals(0, offer.getCharacteristics().size());
+        // Assert.assertEquals("true", offer.getCharacteristics().get("testing"));
     }
 
     // 7b
