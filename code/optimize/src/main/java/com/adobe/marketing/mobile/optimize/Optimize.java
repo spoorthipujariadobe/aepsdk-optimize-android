@@ -119,6 +119,114 @@ public class Optimize {
     }
 
     /**
+     * This API dispatches an Event for the Edge network extension to fetch decision propositions,
+     * for the provided decision scopes list, from the decisioning services enabled in the
+     * Experience Edge network.
+     *
+     * <p>The returned decision propositions are cached in-memory in the Optimize SDK extension and
+     * can be retrieved using {@link #getPropositions(List, AdobeCallback)} API.
+     *
+     * @param decisionScopes {@code List<DecisionScope>} containing scopes for which offers need to
+     *     be updated.
+     * @param xdm {@code Map<String, Object>} containing additional XDM-formatted data to be sent in
+     *     the personalization query request.
+     * @param data {@code Map<String, Object>} containing additional free-form data to be sent in
+     *     the personalization query request.
+     */
+    public static void updatePropositions(
+            @NonNull final List<DecisionScope> decisionScopes,
+            @Nullable final Map<String, Object> xdm,
+            @Nullable final Map<String, Object> data,
+            @NonNull final AdobeCallback<Map<DecisionScope, OptimizeProposition>> callback) {
+        if (OptimizeUtils.isNullOrEmpty(decisionScopes)) {
+            Log.warning(
+                    OptimizeConstants.LOG_TAG,
+                    SELF_TAG,
+                    "Cannot update propositions, provided list of decision scopes is null or"
+                            + " empty.");
+            failWithError(callback, AdobeError.UNEXPECTED_ERROR);
+            return;
+        }
+
+        final List<DecisionScope> validScopes = new ArrayList<>();
+        for (final DecisionScope scope : decisionScopes) {
+            if (!scope.isValid()) {
+                continue;
+            }
+            validScopes.add(scope);
+        }
+
+        if (validScopes.size() == 0) {
+            Log.warning(
+                    OptimizeConstants.LOG_TAG,
+                    SELF_TAG,
+                    "Cannot update propositions, provided list of decision scopes has no valid"
+                            + " scope.");
+            return;
+        }
+
+        final List<Map<String, Object>> flattenedDecisionScopes = new ArrayList<>();
+        for (final DecisionScope scope : validScopes) {
+            flattenedDecisionScopes.add(scope.toEventData());
+        }
+
+        final Map<String, Object> eventData = new HashMap<>();
+        eventData.put(
+                OptimizeConstants.EventDataKeys.REQUEST_TYPE,
+                OptimizeConstants.EventDataValues.REQUEST_TYPE_UPDATE);
+        eventData.put(OptimizeConstants.EventDataKeys.DECISION_SCOPES, flattenedDecisionScopes);
+
+        if (!OptimizeUtils.isNullOrEmpty(xdm)) {
+            eventData.put(OptimizeConstants.EventDataKeys.XDM, xdm);
+        }
+
+        if (!OptimizeUtils.isNullOrEmpty(data)) {
+            eventData.put(OptimizeConstants.EventDataKeys.DATA, data);
+        }
+
+        final Event event =
+                new Event.Builder(
+                                OptimizeConstants.EventNames.UPDATE_PROPOSITIONS_REQUEST,
+                                OptimizeConstants.EventType.OPTIMIZE,
+                                OptimizeConstants.EventSource.REQUEST_CONTENT)
+                        .setEventData(eventData)
+                        .build();
+
+        MobileCore.dispatchEventWithResponseCallback(
+                event,
+                OptimizeConstants.GET_RESPONSE_CALLBACK_TIMEOUT,
+                new AdobeCallbackWithError<Event>() {
+                    @Override
+                    public void fail(final AdobeError adobeError) {
+                        failWithError(callback, adobeError);
+                    }
+
+                    @Override
+                    public void call(final Event event) {
+                        try {
+                            final Map<String, Object> eventData = event.getEventData();
+                            if (OptimizeUtils.isNullOrEmpty(eventData)) {
+                                failWithError(callback, AdobeError.UNEXPECTED_ERROR);
+                                return;
+                            }
+
+                            if (eventData.containsKey(
+                                    OptimizeConstants.EventDataKeys.RESPONSE_ERROR)) {
+                                final int errorCode =
+                                        DataReader.getInt(
+                                                eventData,
+                                                OptimizeConstants.EventDataKeys.RESPONSE_ERROR);
+                                failWithError(
+                                        callback, OptimizeUtils.convertToAdobeError(errorCode));
+                            }
+                        } catch (DataReaderException e) {
+                            failWithError(callback, AdobeError.UNEXPECTED_ERROR);
+                        }
+                    }
+                });
+    }
+
+    /**
      * This API retrieves the previously fetched propositions, for the provided decision scopes,
      * from the in-memory extension propositions cache.
      *

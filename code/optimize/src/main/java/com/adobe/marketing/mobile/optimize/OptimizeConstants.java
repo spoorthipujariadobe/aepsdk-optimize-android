@@ -18,7 +18,7 @@ class OptimizeConstants {
     static final String FRIENDLY_NAME = "Optimize";
     static final long DEFAULT_RESPONSE_CALLBACK_TIMEOUT = 500L;
     static final long GET_RESPONSE_CALLBACK_TIMEOUT = 10000L;
-    static final long EDGE_CONTENT_COMPLETE_RESPONSE_TIMEOUT = 5000L;
+    static final long EDGE_CONTENT_COMPLETE_RESPONSE_TIMEOUT = 10000L;
 
     static final String ACTIVITY_ID = "activityId";
     static final String XDM_ACTIVITY_ID = "xdm:activityId";
