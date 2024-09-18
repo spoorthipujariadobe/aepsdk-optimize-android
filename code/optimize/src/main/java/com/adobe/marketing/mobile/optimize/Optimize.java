@@ -144,7 +144,9 @@ public class Optimize {
                     SELF_TAG,
                     "Cannot update propositions, provided list of decision scopes is null or"
                             + " empty.");
-            failWithError(callback, AdobeError.UNEXPECTED_ERROR);
+            AEPOptimizeError aepOptimizeError =
+                    new AEPOptimizeError(null, null, null, null, AdobeError.UNEXPECTED_ERROR);
+            failWithOptimizeError(callback, aepOptimizeError);
             return;
         }
 
@@ -198,7 +200,9 @@ public class Optimize {
                 new AdobeCallbackWithError<Event>() {
                     @Override
                     public void fail(final AdobeError adobeError) {
-                        failWithError(callback, adobeError);
+                        AEPOptimizeError aepOptimizeError =
+                                new AEPOptimizeError(null, null, null, null, adobeError);
+                        failWithOptimizeError(callback, aepOptimizeError);
                     }
 
                     @Override
@@ -206,7 +210,14 @@ public class Optimize {
                         try {
                             final Map<String, Object> eventData = event.getEventData();
                             if (OptimizeUtils.isNullOrEmpty(eventData)) {
-                                failWithError(callback, AdobeError.UNEXPECTED_ERROR);
+                                AEPOptimizeError aepOptimizeError =
+                                        new AEPOptimizeError(
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                AdobeError.UNEXPECTED_ERROR);
+                                failWithOptimizeError(callback, aepOptimizeError);
                                 return;
                             }
 
@@ -216,11 +227,20 @@ public class Optimize {
                                         DataReader.getInt(
                                                 eventData,
                                                 OptimizeConstants.EventDataKeys.RESPONSE_ERROR);
-                                failWithError(
-                                        callback, OptimizeUtils.convertToAdobeError(errorCode));
+                                failWithOptimizeError(
+                                        callback,
+                                        new AEPOptimizeError(
+                                                null,
+                                                null,
+                                                null,
+                                                null,
+                                                OptimizeUtils.convertToAdobeError(errorCode)));
                             }
                         } catch (DataReaderException e) {
-                            failWithError(callback, AdobeError.UNEXPECTED_ERROR);
+                            failWithOptimizeError(
+                                    callback,
+                                    new AEPOptimizeError(
+                                            null, null, null, null, AdobeError.UNEXPECTED_ERROR));
                         }
                     }
                 });
@@ -429,6 +449,19 @@ public class Optimize {
         final AdobeCallbackWithError<?> callbackWithError =
                 callback instanceof AdobeCallbackWithError
                         ? (AdobeCallbackWithError<?>) callback
+                        : null;
+
+        if (callbackWithError != null) {
+            callbackWithError.fail(error);
+        }
+    }
+
+    private static void failWithOptimizeError(
+            final AdobeCallback<?> callback, final AEPOptimizeError error) {
+
+        final AdobeCallbackWithOptimizeError<?> callbackWithError =
+                callback instanceof AdobeCallbackWithOptimizeError
+                        ? (AdobeCallbackWithOptimizeError<?>) callback
                         : null;
 
         if (callbackWithError != null) {
