@@ -195,7 +195,6 @@ class OptimizeConstants {
         }
 
         static final class Unexpected {
-            ;
             static final String TITLE = "Unexpected Error";
             static final String DETAIL = "An unexpected error occurred.";
 
