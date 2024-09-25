@@ -12,7 +12,7 @@
 package com.adobe.marketing.mobile.optimize;
 
 class OptimizeConstants {
-    static final String LOG_TAG = "Optimize";
+    static final String LOG_TAG = "IshitaOptimize";
     static final String EXTENSION_VERSION = "3.0.2";
     static final String EXTENSION_NAME = "com.adobe.optimize";
     static final String FRIENDLY_NAME = "Optimize";
@@ -99,6 +99,9 @@ class OptimizeConstants {
         static final class ErrorKeys {
             static final String TYPE = "type";
             static final String DETAIL = "detail";
+            static final String STATUS = "status";
+            static final String TITLE = "title";
+            static final String REPORT = "report";
 
             private ErrorKeys() {}
         }
@@ -180,5 +183,25 @@ class OptimizeConstants {
                 "https://ns.adobe.com/experience/offer-management/content-component-text";
 
         private JsonValues() {}
+    }
+
+    static final class ErrorData {
+        static final class Timeout {
+            static final Integer STATUS = 408;
+            static final String TITLE = "Request Timeout";
+            static final String DETAIL = "Update/Get proposition request resulted in a timeout.";
+
+            private Timeout() {}
+        }
+
+        static final class Unexpected {
+            ;
+            static final String TITLE = "Unexpected Error";
+            static final String DETAIL = "An unexpected error occurred.";
+
+            private Unexpected() {}
+        }
+
+        private ErrorData() {}
     }
 }

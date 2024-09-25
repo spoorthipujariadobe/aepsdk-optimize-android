@@ -62,58 +62,12 @@ public class Optimize {
             @NonNull final List<DecisionScope> decisionScopes,
             @Nullable final Map<String, Object> xdm,
             @Nullable final Map<String, Object> data) {
-        if (OptimizeUtils.isNullOrEmpty(decisionScopes)) {
-            Log.warning(
-                    OptimizeConstants.LOG_TAG,
-                    SELF_TAG,
-                    "Cannot update propositions, provided list of decision scopes is null or"
-                            + " empty.");
+
+        Event event = updatePropositionsHelper(decisionScopes, xdm, data, null);
+
+        if (event == null) {
             return;
         }
-
-        final List<DecisionScope> validScopes = new ArrayList<>();
-        for (final DecisionScope scope : decisionScopes) {
-            if (!scope.isValid()) {
-                continue;
-            }
-            validScopes.add(scope);
-        }
-
-        if (validScopes.size() == 0) {
-            Log.warning(
-                    OptimizeConstants.LOG_TAG,
-                    SELF_TAG,
-                    "Cannot update propositions, provided list of decision scopes has no valid"
-                            + " scope.");
-            return;
-        }
-
-        final List<Map<String, Object>> flattenedDecisionScopes = new ArrayList<>();
-        for (final DecisionScope scope : validScopes) {
-            flattenedDecisionScopes.add(scope.toEventData());
-        }
-
-        final Map<String, Object> eventData = new HashMap<>();
-        eventData.put(
-                OptimizeConstants.EventDataKeys.REQUEST_TYPE,
-                OptimizeConstants.EventDataValues.REQUEST_TYPE_UPDATE);
-        eventData.put(OptimizeConstants.EventDataKeys.DECISION_SCOPES, flattenedDecisionScopes);
-
-        if (!OptimizeUtils.isNullOrEmpty(xdm)) {
-            eventData.put(OptimizeConstants.EventDataKeys.XDM, xdm);
-        }
-
-        if (!OptimizeUtils.isNullOrEmpty(data)) {
-            eventData.put(OptimizeConstants.EventDataKeys.DATA, data);
-        }
-
-        final Event event =
-                new Event.Builder(
-                                OptimizeConstants.EventNames.UPDATE_PROPOSITIONS_REQUEST,
-                                OptimizeConstants.EventType.OPTIMIZE,
-                                OptimizeConstants.EventSource.REQUEST_CONTENT)
-                        .setEventData(eventData)
-                        .build();
 
         MobileCore.dispatchEvent(event);
     }
@@ -139,71 +93,29 @@ public class Optimize {
             @NonNull final List<DecisionScope> decisionScopes,
             @Nullable final Map<String, Object> xdm,
             @Nullable final Map<String, Object> data,
-            @NonNull final AdobeCallback<Map<DecisionScope, OptimizeProposition>> callback) {
-        if (OptimizeUtils.isNullOrEmpty(decisionScopes)) {
-            Log.warning(
-                    OptimizeConstants.LOG_TAG,
-                    SELF_TAG,
-                    "Cannot update propositions, provided list of decision scopes is null or"
-                            + " empty.");
-            AEPOptimizeError aepOptimizeError =
-                    new AEPOptimizeError(null, null, null, null, AdobeError.UNEXPECTED_ERROR);
-            failWithOptimizeError(callback, aepOptimizeError);
+            @Nullable final AdobeCallback<Map<DecisionScope, OptimizeProposition>> callback) {
+
+        Event event = updatePropositionsHelper(decisionScopes, xdm, data, callback);
+
+        if (event == null) {
             return;
         }
-
-        final List<DecisionScope> validScopes = new ArrayList<>();
-        for (final DecisionScope scope : decisionScopes) {
-            if (!scope.isValid()) {
-                continue;
-            }
-            validScopes.add(scope);
-        }
-
-        if (validScopes.size() == 0) {
-            Log.warning(
-                    OptimizeConstants.LOG_TAG,
-                    SELF_TAG,
-                    "Cannot update propositions, provided list of decision scopes has no valid"
-                            + " scope.");
-            return;
-        }
-
-        final List<Map<String, Object>> flattenedDecisionScopes = new ArrayList<>();
-        for (final DecisionScope scope : validScopes) {
-            flattenedDecisionScopes.add(scope.toEventData());
-        }
-
-        final Map<String, Object> eventData = new HashMap<>();
-        eventData.put(
-                OptimizeConstants.EventDataKeys.REQUEST_TYPE,
-                OptimizeConstants.EventDataValues.REQUEST_TYPE_UPDATE);
-        eventData.put(OptimizeConstants.EventDataKeys.DECISION_SCOPES, flattenedDecisionScopes);
-
-        if (!OptimizeUtils.isNullOrEmpty(xdm)) {
-            eventData.put(OptimizeConstants.EventDataKeys.XDM, xdm);
-        }
-
-        if (!OptimizeUtils.isNullOrEmpty(data)) {
-            eventData.put(OptimizeConstants.EventDataKeys.DATA, data);
-        }
-
-        final Event event =
-                new Event.Builder(
-                                OptimizeConstants.EventNames.UPDATE_PROPOSITIONS_REQUEST,
-                                OptimizeConstants.EventType.OPTIMIZE,
-                                OptimizeConstants.EventSource.REQUEST_CONTENT)
-                        .setEventData(eventData)
-                        .build();
 
         MobileCore.dispatchEventWithResponseCallback(
                 event,
-                OptimizeConstants.GET_RESPONSE_CALLBACK_TIMEOUT,
+                OptimizeConstants.EDGE_CONTENT_COMPLETE_RESPONSE_TIMEOUT,
                 new AdobeCallbackWithError<Event>() {
                     @Override
                     public void fail(final AdobeError adobeError) {
-                        AEPOptimizeError aepOptimizeError =
-                                new AEPOptimizeError(null, null, null, null, adobeError);
+                        AEPOptimizeError aepOptimizeError;
+                        if (adobeError == AdobeError.CALLBACK_TIMEOUT) {
+                            aepOptimizeError =
+                                    AEPOptimizeError.AEPOptimizeErrors.INSTANCE.getTIMEOUT_ERROR();
+                        } else {
+                            aepOptimizeError =
+                                    AEPOptimizeError.AEPOptimizeErrors.INSTANCE
+                                            .getUNEXPECTED_ERROR();
+                        }
                         failWithOptimizeError(callback, aepOptimizeError);
                     }
 
@@ -212,13 +124,10 @@ public class Optimize {
                         try {
                             final Map<String, Object> eventData = event.getEventData();
                             if (OptimizeUtils.isNullOrEmpty(eventData)) {
+
                                 AEPOptimizeError aepOptimizeError =
-                                        new AEPOptimizeError(
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                AdobeError.UNEXPECTED_ERROR);
+                                        AEPOptimizeError.AEPOptimizeErrors.INSTANCE
+                                                .getUNEXPECTED_ERROR();
                                 failWithOptimizeError(callback, aepOptimizeError);
                                 return;
                             }
@@ -229,20 +138,27 @@ public class Optimize {
                                         DataReader.getInt(
                                                 eventData,
                                                 OptimizeConstants.EventDataKeys.RESPONSE_ERROR);
-                                failWithOptimizeError(
-                                        callback,
-                                        new AEPOptimizeError(
-                                                null,
-                                                null,
-                                                null,
-                                                null,
-                                                OptimizeUtils.convertToAdobeError(errorCode)));
+
+                                AEPOptimizeError aepOptimizeError;
+
+                                if (OptimizeUtils.convertToAdobeError(errorCode)
+                                        == AdobeError.CALLBACK_TIMEOUT) {
+                                    aepOptimizeError =
+                                            AEPOptimizeError.AEPOptimizeErrors.INSTANCE
+                                                    .getTIMEOUT_ERROR();
+                                } else {
+                                    aepOptimizeError =
+                                            AEPOptimizeError.AEPOptimizeErrors.INSTANCE
+                                                    .getUNEXPECTED_ERROR();
+                                }
+
+                                failWithOptimizeError(callback, aepOptimizeError);
                             }
                         } catch (DataReaderException e) {
                             failWithOptimizeError(
                                     callback,
-                                    new AEPOptimizeError(
-                                            null, null, null, null, AdobeError.UNEXPECTED_ERROR));
+                                    AEPOptimizeError.AEPOptimizeErrors.INSTANCE
+                                            .getUNEXPECTED_ERROR());
                         }
                     }
                 });
@@ -458,7 +374,7 @@ public class Optimize {
         }
     }
 
-    private static void failWithOptimizeError(
+    protected static void failWithOptimizeError(
             final AdobeCallback<?> callback, final AEPOptimizeError error) {
 
         final AdobeCallbackWithOptimizeError<?> callbackWithError =
@@ -469,5 +385,69 @@ public class Optimize {
         if (callbackWithError != null) {
             callbackWithError.fail(error);
         }
+    }
+
+    private static Event updatePropositionsHelper(
+            @NonNull final List<DecisionScope> decisionScopes,
+            @Nullable final Map<String, Object> xdm,
+            @Nullable final Map<String, Object> data,
+            @Nullable final AdobeCallback<Map<DecisionScope, OptimizeProposition>> callback) {
+        if (OptimizeUtils.isNullOrEmpty(decisionScopes)) {
+            Log.warning(
+                    OptimizeConstants.LOG_TAG,
+                    SELF_TAG,
+                    "Cannot update propositions, provided list of decision scopes is null or"
+                            + " empty.");
+            AEPOptimizeError aepOptimizeError =
+                    AEPOptimizeError.AEPOptimizeErrors.INSTANCE.getUNEXPECTED_ERROR();
+            failWithOptimizeError(callback, aepOptimizeError);
+            return null;
+        }
+
+        final List<DecisionScope> validScopes = new ArrayList<>();
+        for (final DecisionScope scope : decisionScopes) {
+            if (!scope.isValid()) {
+                continue;
+            }
+            validScopes.add(scope);
+        }
+
+        if (validScopes.size() == 0) {
+            Log.warning(
+                    OptimizeConstants.LOG_TAG,
+                    SELF_TAG,
+                    "Cannot update propositions, provided list of decision scopes has no valid"
+                            + " scope.");
+            return null;
+        }
+
+        final List<Map<String, Object>> flattenedDecisionScopes = new ArrayList<>();
+        for (final DecisionScope scope : validScopes) {
+            flattenedDecisionScopes.add(scope.toEventData());
+        }
+
+        final Map<String, Object> eventData = new HashMap<>();
+        eventData.put(
+                OptimizeConstants.EventDataKeys.REQUEST_TYPE,
+                OptimizeConstants.EventDataValues.REQUEST_TYPE_UPDATE);
+        eventData.put(OptimizeConstants.EventDataKeys.DECISION_SCOPES, flattenedDecisionScopes);
+
+        if (!OptimizeUtils.isNullOrEmpty(xdm)) {
+            eventData.put(OptimizeConstants.EventDataKeys.XDM, xdm);
+        }
+
+        if (!OptimizeUtils.isNullOrEmpty(data)) {
+            eventData.put(OptimizeConstants.EventDataKeys.DATA, data);
+        }
+
+        final Event event =
+                new Event.Builder(
+                                OptimizeConstants.EventNames.UPDATE_PROPOSITIONS_REQUEST,
+                                OptimizeConstants.EventType.OPTIMIZE,
+                                OptimizeConstants.EventSource.REQUEST_CONTENT)
+                        .setEventData(eventData)
+                        .build();
+
+        return event;
     }
 }

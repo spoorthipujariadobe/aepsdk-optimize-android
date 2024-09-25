@@ -379,7 +379,22 @@ class OptimizeExtension extends Extension {
                             // queue.
                             updateRequestEventIdsInProgress.remove(edgeEvent.getUniqueIdentifier());
                             propositionsInProgress.clear();
-
+                            AEPOptimizeError aepOptimizeError =
+                                    AEPOptimizeError.AEPOptimizeErrors.INSTANCE
+                                            .getUNEXPECTED_ERROR();
+                            // create an event with optimize error
+                            final Map<String, Object> optimizeErrorEventData = new HashMap<>();
+                            optimizeErrorEventData.put(
+                                    OptimizeConstants.EventDataKeys.RESPONSE_ERROR,
+                                    aepOptimizeError);
+                            Event optimizeErrorEvent =
+                                    new Event.Builder(
+                                                    OptimizeConstants.EventNames.OPTIMIZE_RESPONSE,
+                                                    OptimizeConstants.EventType.OPTIMIZE,
+                                                    OptimizeConstants.EventSource.RESPONSE_CONTENT)
+                                            .setEventData(optimizeErrorEventData)
+                                            .build();
+                            MobileCore.dispatchEvent(optimizeErrorEvent);
                             eventsDispatcher.resume();
                         }
 

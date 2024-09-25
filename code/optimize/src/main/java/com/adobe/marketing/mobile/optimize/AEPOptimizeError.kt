@@ -11,11 +11,9 @@
 
 package com.adobe.marketing.mobile.optimize
 import com.adobe.marketing.mobile.AdobeError
-public class AEPOptimizeError(val type: String? = "", val status: Int? = 0, val title: String? = "", val detail: String? = "", var adobeError: AdobeError?) {
+public class AEPOptimizeError(val type: String? = "", val status: Int? = 0, val title: String? = "", val detail: String? = "", var report: Map<String, Any>?, var adobeError: AdobeError?) {
     init {
         if (adobeError == null) {
-            adobeError = AdobeError.UNEXPECTED_ERROR
-        } else {
             adobeError = when (status) {
                 408 -> AdobeError.CALLBACK_TIMEOUT
                 400, 403, 404 -> AdobeError.UNEXPECTED_ERROR
@@ -25,4 +23,46 @@ public class AEPOptimizeError(val type: String? = "", val status: Int? = 0, val 
             }
         }
     }
+
+    object AEPOptimizeErrors {
+        val TIMEOUT_ERROR: AEPOptimizeError = AEPOptimizeError(
+            null,
+            OptimizeConstants.ErrorData.Timeout.STATUS,
+            OptimizeConstants.ErrorData.Timeout.TITLE,
+            OptimizeConstants.ErrorData.Timeout.DETAIL,
+            null,
+            AdobeError.CALLBACK_TIMEOUT
+        )
+
+        val UNEXPECTED_ERROR: AEPOptimizeError = AEPOptimizeError(
+            null,
+            null,
+            OptimizeConstants.ErrorData.Unexpected.TITLE,
+            OptimizeConstants.ErrorData.Unexpected.DETAIL,
+            null,
+            AdobeError.UNEXPECTED_ERROR
+        )
+    }
+
+//     fun createAEPOptimizeTimeoutError(): AEPOptimizeError {
+//        return AEPOptimizeError(
+//            null,
+//            OptimizeConstants.ErrorData.Timeout.STATUS,
+//            OptimizeConstants.ErrorData.Timeout.TITLE,
+//            OptimizeConstants.ErrorData.Timeout.DETAIL,
+//            null,
+//            AdobeError.CALLBACK_TIMEOUT
+//        )
+//    }
+//
+//    public fun createAEPOptimizeUnexpectedError(): AEPOptimizeError {
+//        return AEPOptimizeError(
+//            null,
+//            null,
+//            OptimizeConstants.ErrorData.Unexpected.TITLE,
+//            OptimizeConstants.ErrorData.Unexpected.DETAIL,
+//            null,
+//            AdobeError.UNEXPECTED_ERROR
+//        )
+//    }
 }
