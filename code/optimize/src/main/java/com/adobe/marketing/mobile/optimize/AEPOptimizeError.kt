@@ -43,26 +43,4 @@ public class AEPOptimizeError(val type: String? = "", val status: Int? = 0, val 
             AdobeError.UNEXPECTED_ERROR
         )
     }
-
-//     fun createAEPOptimizeTimeoutError(): AEPOptimizeError {
-//        return AEPOptimizeError(
-//            null,
-//            OptimizeConstants.ErrorData.Timeout.STATUS,
-//            OptimizeConstants.ErrorData.Timeout.TITLE,
-//            OptimizeConstants.ErrorData.Timeout.DETAIL,
-//            null,
-//            AdobeError.CALLBACK_TIMEOUT
-//        )
-//    }
-//
-//    public fun createAEPOptimizeUnexpectedError(): AEPOptimizeError {
-//        return AEPOptimizeError(
-//            null,
-//            null,
-//            OptimizeConstants.ErrorData.Unexpected.TITLE,
-//            OptimizeConstants.ErrorData.Unexpected.DETAIL,
-//            null,
-//            AdobeError.UNEXPECTED_ERROR
-//        )
-//    }
 }
