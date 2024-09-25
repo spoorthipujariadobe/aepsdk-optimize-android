@@ -96,8 +96,7 @@ public class Optimize {
                     "Cannot update propositions, provided list of decision scopes is null or"
                             + " empty.");
 
-            AEPOptimizeError aepOptimizeError =
-                    AEPOptimizeError.AEPOptimizeErrors.INSTANCE.getUNEXPECTED_ERROR();
+            AEPOptimizeError aepOptimizeError = AEPOptimizeError.Companion.getUnexpectedError();
             failWithOptimizeError(callback, aepOptimizeError);
 
             return;
@@ -159,12 +158,9 @@ public class Optimize {
                     public void fail(final AdobeError adobeError) {
                         AEPOptimizeError aepOptimizeError;
                         if (adobeError == AdobeError.CALLBACK_TIMEOUT) {
-                            aepOptimizeError =
-                                    AEPOptimizeError.AEPOptimizeErrors.INSTANCE.getTIMEOUT_ERROR();
+                            aepOptimizeError = AEPOptimizeError.Companion.getTimeoutError();
                         } else {
-                            aepOptimizeError =
-                                    AEPOptimizeError.AEPOptimizeErrors.INSTANCE
-                                            .getUNEXPECTED_ERROR();
+                            aepOptimizeError = AEPOptimizeError.Companion.getUnexpectedError();
                         }
                         failWithOptimizeError(callback, aepOptimizeError);
                     }
@@ -176,8 +172,7 @@ public class Optimize {
                             if (OptimizeUtils.isNullOrEmpty(eventData)) {
 
                                 AEPOptimizeError aepOptimizeError =
-                                        AEPOptimizeError.AEPOptimizeErrors.INSTANCE
-                                                .getUNEXPECTED_ERROR();
+                                        AEPOptimizeError.Companion.getUnexpectedError();
                                 failWithOptimizeError(callback, aepOptimizeError);
                                 return;
                             }
@@ -193,22 +188,17 @@ public class Optimize {
 
                                 if (OptimizeUtils.convertToAdobeError(errorCode)
                                         == AdobeError.CALLBACK_TIMEOUT) {
-                                    aepOptimizeError =
-                                            AEPOptimizeError.AEPOptimizeErrors.INSTANCE
-                                                    .getTIMEOUT_ERROR();
+                                    aepOptimizeError = AEPOptimizeError.Companion.getTimeoutError();
                                 } else {
                                     aepOptimizeError =
-                                            AEPOptimizeError.AEPOptimizeErrors.INSTANCE
-                                                    .getUNEXPECTED_ERROR();
+                                            AEPOptimizeError.Companion.getUnexpectedError();
                                 }
 
                                 failWithOptimizeError(callback, aepOptimizeError);
                             }
                         } catch (DataReaderException e) {
                             failWithOptimizeError(
-                                    callback,
-                                    AEPOptimizeError.AEPOptimizeErrors.INSTANCE
-                                            .getUNEXPECTED_ERROR());
+                                    callback, AEPOptimizeError.Companion.getUnexpectedError());
                         }
                     }
                 });

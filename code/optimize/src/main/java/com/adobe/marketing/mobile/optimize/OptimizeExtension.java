@@ -382,13 +382,9 @@ class OptimizeExtension extends Extension {
 
                             AEPOptimizeError aepOptimizeError;
                             if (error == AdobeError.CALLBACK_TIMEOUT) {
-                                aepOptimizeError =
-                                        AEPOptimizeError.AEPOptimizeErrors.INSTANCE
-                                                .getTIMEOUT_ERROR();
+                                aepOptimizeError = AEPOptimizeError.Companion.getTimeoutError();
                             } else {
-                                aepOptimizeError =
-                                        AEPOptimizeError.AEPOptimizeErrors.INSTANCE
-                                                .getUNEXPECTED_ERROR();
+                                aepOptimizeError = AEPOptimizeError.Companion.getUnexpectedError();
                             }
 
                             // create an event with optimize error
