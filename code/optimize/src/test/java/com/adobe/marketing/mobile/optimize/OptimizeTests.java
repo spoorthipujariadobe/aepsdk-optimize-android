@@ -82,8 +82,19 @@ public class OptimizeTests {
             Optimize.updatePropositions(scopes, null, null);
 
             // verify
+
+
             final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-            mobileCoreMockedStatic.verify(() -> MobileCore.dispatchEvent(eventCaptor.capture()));
+            final ArgumentCaptor<AdobeCallbackWithError<Event>> callbackCaptor =
+                    ArgumentCaptor.forClass(AdobeCallbackWithError.class);
+            mobileCoreMockedStatic.verify(
+                    () ->
+                            MobileCore.dispatchEventWithResponseCallback(
+                                    eventCaptor.capture(),
+                                    ArgumentMatchers.anyLong(),
+                                    callbackCaptor.capture()));
+
+//            mobileCoreMockedStatic.verify(() -> MobileCore.dispatchEventWithResponseCallback(eventCaptor.capture()));
             final Event event = eventCaptor.getValue();
 
             Assert.assertNotNull(event);
@@ -146,8 +157,19 @@ public class OptimizeTests {
                     });
 
             // verify
+//            final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+//            mobileCoreMockedStatic.verify(() -> MobileCore.dispatchEvent(eventCaptor.capture()));
+
             final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-            mobileCoreMockedStatic.verify(() -> MobileCore.dispatchEvent(eventCaptor.capture()));
+            final ArgumentCaptor<AdobeCallbackWithError<Event>> callbackCaptor =
+                    ArgumentCaptor.forClass(AdobeCallbackWithError.class);
+            mobileCoreMockedStatic.verify(
+                    () ->
+                            MobileCore.dispatchEventWithResponseCallback(
+                                    eventCaptor.capture(),
+                                    ArgumentMatchers.anyLong(),
+                                    callbackCaptor.capture()));
+
             final Event event = eventCaptor.getValue();
 
             Assert.assertNotNull(event);
@@ -208,8 +230,20 @@ public class OptimizeTests {
             Optimize.updatePropositions(scopes, null, null);
 
             // verify
+//            final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+//            mobileCoreMockedStatic.verify(() -> MobileCore.dispatchEvent(eventCaptor.capture()));
+
+
             final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-            mobileCoreMockedStatic.verify(() -> MobileCore.dispatchEvent(eventCaptor.capture()));
+            final ArgumentCaptor<AdobeCallbackWithError<Event>> callbackCaptor =
+                    ArgumentCaptor.forClass(AdobeCallbackWithError.class);
+            mobileCoreMockedStatic.verify(
+                    () ->
+                            MobileCore.dispatchEventWithResponseCallback(
+                                    eventCaptor.capture(),
+                                    ArgumentMatchers.anyLong(),
+                                    callbackCaptor.capture()));
+
             final Event event = eventCaptor.getValue();
 
             Assert.assertNotNull(event);
