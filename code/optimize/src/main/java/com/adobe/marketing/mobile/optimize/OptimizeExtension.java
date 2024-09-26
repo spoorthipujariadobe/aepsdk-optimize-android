@@ -409,20 +409,23 @@ class OptimizeExtension extends Extension {
 
                         @Override
                         public void call(final Event callbackEvent) {
-                            final String requestEventId = OptimizeUtils.getRequestEventId(callbackEvent);
+                            final String requestEventId =
+                                    OptimizeUtils.getRequestEventId(callbackEvent);
                             if (OptimizeUtils.isNullOrEmpty(requestEventId)) {
                                 fail(AdobeError.UNEXPECTED_ERROR);
                                 return;
                             }
 
                             final Map<String, Object> responseEventData = new HashMap<>();
-                            responseEventData.put(OptimizeConstants.EventDataKeys.PROPOSITIONS, propositionsInProgress);
+                            responseEventData.put(
+                                    OptimizeConstants.EventDataKeys.PROPOSITIONS,
+                                    propositionsInProgress);
 
                             final Event responseEvent =
                                     new Event.Builder(
-                                            OptimizeConstants.EventNames.OPTIMIZE_RESPONSE,
-                                            OptimizeConstants.EventType.OPTIMIZE,
-                                            OptimizeConstants.EventSource.RESPONSE_CONTENT)
+                                                    OptimizeConstants.EventNames.OPTIMIZE_RESPONSE,
+                                                    OptimizeConstants.EventType.OPTIMIZE,
+                                                    OptimizeConstants.EventSource.RESPONSE_CONTENT)
                                             .setEventData(responseEventData)
                                             .inResponseToEvent(event)
                                             .build();

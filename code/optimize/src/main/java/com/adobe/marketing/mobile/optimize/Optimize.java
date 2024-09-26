@@ -174,23 +174,25 @@ public class Optimize {
                             }
 
                             if (eventData.containsKey(
-                                    OptimizeConstants.EventDataKeys.RESPONSE_ERROR)) {
-                                final int errorCode =
-                                        DataReader.getInt(
+                                    OptimizeConstants.EventDataKeys.PROPOSITIONS)) {
+                                final Map<DecisionScope, OptimizeProposition> propositionsMap =
+                                        new HashMap<>();
+                                final Map<String, Object> propositionData =
+                                        DataReader.getTypedMap(
+                                                Object.class,
                                                 eventData,
-                                                OptimizeConstants.EventDataKeys.RESPONSE_ERROR);
+                                                OptimizeConstants.EventDataKeys.PROPOSITIONS);
 
-                                AEPOptimizeError aepOptimizeError;
-
-                                if (OptimizeUtils.convertToAdobeError(errorCode)
-                                        == AdobeError.CALLBACK_TIMEOUT) {
-                                    aepOptimizeError = AEPOptimizeError.Companion.getTimeoutError();
-                                } else {
-                                    aepOptimizeError =
-                                            AEPOptimizeError.Companion.getUnexpectedError();
+                                final OptimizeProposition optimizeProposition =
+                                        OptimizeProposition.fromEventData(propositionData);
+                                if (optimizeProposition != null
+                                        && !OptimizeUtils.isNullOrEmpty(
+                                                optimizeProposition.getScope())) {
+                                    final DecisionScope scope =
+                                            new DecisionScope(optimizeProposition.getScope());
+                                    propositionsMap.put(scope, optimizeProposition);
                                 }
-
-                                failWithOptimizeError(callback, aepOptimizeError);
+                                callback.call(propositionsMap);
                             }
                         } catch (DataReaderException e) {
                             failWithOptimizeError(
