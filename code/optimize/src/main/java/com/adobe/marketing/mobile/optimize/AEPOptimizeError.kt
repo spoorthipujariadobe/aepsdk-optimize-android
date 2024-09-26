@@ -21,7 +21,7 @@ import com.adobe.marketing.mobile.AdobeError
  * @param report The report of the error.
  * @param adobeError The corresponding AdobeError.
  */
-public class AEPOptimizeError(val type: String? = "", val status: Int? = 0, val title: String? = "", val detail: String? = "", var report: Map<String, Any>?, var adobeError: AdobeError?) {
+class AEPOptimizeError(val type: String? = "", val status: Int? = 0, val title: String? = "", val detail: String? = "", var report: Map<String, Any>?, var adobeError: AdobeError?) {
     companion object {
         public fun getTimeoutError(): AEPOptimizeError {
             return AEPOptimizeError(
