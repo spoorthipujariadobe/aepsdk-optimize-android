@@ -83,7 +83,6 @@ public class OptimizeTests {
 
             // verify
 
-
             final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
             final ArgumentCaptor<AdobeCallbackWithError<Event>> callbackCaptor =
                     ArgumentCaptor.forClass(AdobeCallbackWithError.class);
@@ -94,7 +93,6 @@ public class OptimizeTests {
                                     ArgumentMatchers.anyLong(),
                                     callbackCaptor.capture()));
 
-//            mobileCoreMockedStatic.verify(() -> MobileCore.dispatchEventWithResponseCallback(eventCaptor.capture()));
             final Event event = eventCaptor.getValue();
 
             Assert.assertNotNull(event);
@@ -116,6 +114,108 @@ public class OptimizeTests {
             Assert.assertEquals(
                     "eyJhY3Rpdml0eUlkIjoieGNvcmU6b2ZmZXItYWN0aXZpdHk6MTExMTExMTExMTExMTExMSIsInBsYWNlbWVudElkIjoieGNvcmU6b2ZmZXItcGxhY2VtZW50OjExMTExMTExMTExMTExMTEifQ==",
                     scopeData.get("name"));
+        }
+    }
+
+    @Test
+    public void testUpdatePropositionsWithCallback_validDecisionScope() throws Exception {
+        try (MockedStatic<MobileCore> mobileCoreMockedStatic =
+                        Mockito.mockStatic(MobileCore.class);
+                MockedStatic<Base64> base64MockedStatic = Mockito.mockStatic(Base64.class)) {
+            // setup
+            base64MockedStatic
+                    .when(
+                            () ->
+                                    Base64.decode(
+                                            ArgumentMatchers.anyString(),
+                                            ArgumentMatchers.anyInt()))
+                    .thenAnswer(
+                            (Answer<byte[]>)
+                                    invocation ->
+                                            java.util.Base64.getDecoder()
+                                                    .decode((String) invocation.getArguments()[0]));
+
+            // test
+            final List<DecisionScope> scopes = new ArrayList<>();
+            scopes.add(
+                    new DecisionScope(
+                            "eyJhY3Rpdml0eUlkIjoieGNvcmU6b2ZmZXItYWN0aXZpdHk6MTExMTExMTExMTExMTExMSIsInBsYWNlbWVudElkIjoieGNvcmU6b2ZmZXItcGxhY2VtZW50OjExMTExMTExMTExMTExMTEifQ=="));
+
+            Optimize.updatePropositions(
+                    scopes,
+                    null,
+                    null,
+                    new AdobeCallbackWithError<Map<DecisionScope, OptimizeProposition>>() {
+                        @Override
+                        public void fail(AdobeError adobeError) {
+                            responseError = adobeError;
+                        }
+
+                        @Override
+                        public void call(Map<DecisionScope, OptimizeProposition> propositionsMap) {
+                            responseMap = propositionsMap;
+                        }
+                    });
+
+            final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+            final ArgumentCaptor<AdobeCallbackWithError<Event>> callbackCaptor =
+                    ArgumentCaptor.forClass(AdobeCallbackWithError.class);
+
+            mobileCoreMockedStatic.verify(
+                    () ->
+                            MobileCore.dispatchEventWithResponseCallback(
+                                    eventCaptor.capture(),
+                                    ArgumentMatchers.anyLong(),
+                                    callbackCaptor.capture()));
+
+            final Event event = eventCaptor.getValue();
+            final AdobeCallbackWithError<Event> callbackWithError = callbackCaptor.getValue();
+
+            Assert.assertNotNull(event);
+            Assert.assertEquals("com.adobe.eventType.optimize", event.getType());
+            Assert.assertEquals("com.adobe.eventSource.requestContent", event.getSource());
+
+            final Map<String, Object> eventData = event.getEventData();
+            Assert.assertEquals("updatepropositions", eventData.get("requesttype"));
+
+            final List<Map<String, Object>> scopesList =
+                    (List<Map<String, Object>>) eventData.get("decisionscopes");
+            Assert.assertEquals(1, scopesList.size());
+
+            final Map<String, Object> scopeData = scopesList.get(0);
+            Assert.assertNotNull(scopeData);
+            Assert.assertEquals(1, scopeData.size());
+            Assert.assertEquals(
+                    "eyJhY3Rpdml0eUlkIjoieGNvcmU6b2ZmZXItYWN0aXZpdHk6MTExMTExMTExMTExMTExMSIsInBsYWNlbWVudElkIjoieGNvcmU6b2ZmZXItcGxhY2VtZW50OjExMTExMTExMTExMTExMTEifQ==",
+                    scopeData.get("name"));
+
+            // verify callback response
+            final Map<String, Object> propositionData =
+                    new ObjectMapper()
+                            .readValue(
+                                    getClass()
+                                            .getClassLoader()
+                                            .getResource("json/PROPOSITION_VALID.json"),
+                                    HashMap.class);
+            final OptimizeProposition optimizeProposition =
+                    OptimizeProposition.fromEventData(propositionData);
+            Assert.assertNotNull(optimizeProposition);
+
+            final List<Map<String, Object>> propositionsList = new ArrayList<>();
+            propositionsList.add(optimizeProposition.toEventData());
+
+            final Map<String, Object> responseEventData = new HashMap<>();
+            responseEventData.put("propositions", propositionsList);
+            final Event responseEvent =
+                    new Event.Builder(
+                                    "Optimize Response",
+                                    "com.adobe.eventType.optimize",
+                                    "com.adobe.eventSource.responseContent")
+                            .setEventData(responseEventData)
+                            .build();
+            callbackWithError.call(responseEvent);
+
+            Assert.assertNull(responseError);
         }
     }
 
@@ -155,10 +255,6 @@ public class OptimizeTests {
                             put("myKey", "myValue");
                         }
                     });
-
-            // verify
-//            final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-//            mobileCoreMockedStatic.verify(() -> MobileCore.dispatchEvent(eventCaptor.capture()));
 
             final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
             final ArgumentCaptor<AdobeCallbackWithError<Event>> callbackCaptor =
@@ -228,11 +324,6 @@ public class OptimizeTests {
             scopes.add(new DecisionScope("myMbox"));
 
             Optimize.updatePropositions(scopes, null, null);
-
-            // verify
-//            final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-//            mobileCoreMockedStatic.verify(() -> MobileCore.dispatchEvent(eventCaptor.capture()));
-
 
             final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
             final ArgumentCaptor<AdobeCallbackWithError<Event>> callbackCaptor =
