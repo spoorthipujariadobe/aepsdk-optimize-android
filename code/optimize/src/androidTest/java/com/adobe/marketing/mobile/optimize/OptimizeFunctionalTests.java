@@ -89,9 +89,9 @@ public class OptimizeFunctionalTests {
                 Collections.singletonList(new DecisionScope(decisionScopeName)),
                 null,
                 null,
-                new AdobeCallbackWithError<Map<DecisionScope, OptimizeProposition>>() {
+                new AdobeCallbackWithOptimizeError<Map<DecisionScope, OptimizeProposition>>() {
                     @Override
-                    public void fail(AdobeError adobeError) {
+                    public void fail(AEPOptimizeError error) {
                         Assert.fail("Update/Get proposition request resulted in a timeout.");
                     }
 
@@ -1240,7 +1240,7 @@ public class OptimizeFunctionalTests {
         Assert.assertNotNull(optimizeResponseEventsList);
 
         Assert.assertEquals(1, optimizeResponseEventsList.size());
-
+        Assert.assertNull(optimizeResponseEventsList.get(0).getEventData().get("responseerror"));
         Assert.assertEquals(1, propositionMap.size());
 
         Assert.assertTrue(propositionMap.containsKey(decisionScope1));
