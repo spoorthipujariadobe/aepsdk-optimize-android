@@ -146,10 +146,6 @@ public class Optimize {
                         .setEventData(eventData)
                         .build();
 
-        if (event == null) {
-            return;
-        }
-
         MobileCore.dispatchEventWithResponseCallback(
                 event,
                 OptimizeConstants.EDGE_CONTENT_COMPLETE_RESPONSE_TIMEOUT,
