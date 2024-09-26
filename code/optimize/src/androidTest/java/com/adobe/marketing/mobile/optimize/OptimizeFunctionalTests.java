@@ -92,7 +92,13 @@ public class OptimizeFunctionalTests {
                 new AdobeCallbackWithOptimizeError<Map<DecisionScope, OptimizeProposition>>() {
                     @Override
                     public void fail(AEPOptimizeError error) {
-                        Assert.fail("Update/Get proposition request resulted in a timeout.");
+                        Assert.fail(OptimizeConstants.ErrorData.Timeout.DETAIL);
+                        Assert.assertEquals(
+                                OptimizeConstants.ErrorData.Timeout.STATUS, error.getStatus());
+                        Assert.assertEquals(
+                                OptimizeConstants.ErrorData.Timeout.TITLE, error.getTitle());
+                        Assert.assertEquals(
+                                OptimizeConstants.ErrorData.Timeout.DETAIL, error.getDetail());
                     }
 
                     @Override
