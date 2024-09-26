@@ -23,7 +23,7 @@ import com.adobe.marketing.mobile.AdobeError
  */
 class AEPOptimizeError(val type: String? = "", val status: Int? = 0, val title: String? = "", val detail: String? = "", var report: Map<String, Any>?, var adobeError: AdobeError?) {
     companion object {
-        public fun getTimeoutError(): AEPOptimizeError {
+         fun getTimeoutError(): AEPOptimizeError {
             return AEPOptimizeError(
                 null,
                 OptimizeConstants.ErrorData.Timeout.STATUS,
@@ -34,7 +34,7 @@ class AEPOptimizeError(val type: String? = "", val status: Int? = 0, val title: 
             )
         }
 
-        public fun getUnexpectedError(): AEPOptimizeError {
+         fun getUnexpectedError(): AEPOptimizeError {
             return AEPOptimizeError(
                 null,
                 null,
