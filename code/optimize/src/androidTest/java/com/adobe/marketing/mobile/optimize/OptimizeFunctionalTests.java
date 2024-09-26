@@ -819,8 +819,11 @@ public class OptimizeFunctionalTests {
                         OptimizeTestConstants.EventSource.RESPONSE_CONTENT);
 
         Assert.assertNotNull(optimizeResponseEventsList);
-        Assert.assertEquals(1, optimizeResponseEventsList.size());
-        Assert.assertNull(optimizeResponseEventsList.get(0).getEventData().get("responseerror"));
+
+        // 1 additional event is being sent from handleUpdatePropositions() to provide callback for
+        // updatePropositons()
+        Assert.assertEquals(2, optimizeResponseEventsList.size());
+
         Assert.assertEquals(1, propositionMap.size());
         OptimizeProposition optimizeProposition = propositionMap.get(decisionScope);
         Assert.assertNotNull(optimizeProposition);
@@ -1208,8 +1211,11 @@ public class OptimizeFunctionalTests {
                         OptimizeTestConstants.EventSource.RESPONSE_CONTENT);
 
         Assert.assertNotNull(optimizeResponseEventsList);
-        Assert.assertEquals(1, optimizeResponseEventsList.size());
-        Assert.assertNull(optimizeResponseEventsList.get(0).getEventData().get("responseerror"));
+
+        // 1 additional event is being sent from handleUpdatePropositions() to provide callback for
+        // updatePropositons()
+        Assert.assertEquals(2, optimizeResponseEventsList.size());
+
         Assert.assertEquals(1, propositionMap.size());
 
         Assert.assertTrue(propositionMap.containsKey(decisionScope1));
