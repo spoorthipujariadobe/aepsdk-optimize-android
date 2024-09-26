@@ -35,6 +35,7 @@ functional-test-coverage:
 
 javadoc:
 	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) javadocJar)
+	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) dokkaJavadoc)
 
 assemble-phone:
 	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) assemblePhone)

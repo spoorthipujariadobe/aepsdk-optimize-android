@@ -18,6 +18,7 @@ val mavenEdgeVersion: String by project
 
 aepLibrary {
     namespace = "com.adobe.marketing.mobile.optimize"
+    enableDokkaDoc = true
     enableSpotless = true
     enableCheckStyle = true
 
