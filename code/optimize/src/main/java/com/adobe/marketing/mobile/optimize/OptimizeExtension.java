@@ -387,22 +387,8 @@ class OptimizeExtension extends Extension {
                                 aepOptimizeError = AEPOptimizeError.Companion.getUnexpectedError();
                             }
 
-                            // create an event with optimize error
-                            final Map<String, Object> optimizeErrorEventData = new HashMap<>();
-
-                            optimizeErrorEventData.put(
-                                    OptimizeConstants.EventDataKeys.RESPONSE_ERROR,
-                                    aepOptimizeError);
-
-                            Event optimizeErrorEvent =
-                                    new Event.Builder(
-                                                    OptimizeConstants.EventNames.OPTIMIZE_RESPONSE,
-                                                    OptimizeConstants.EventType.OPTIMIZE,
-                                                    OptimizeConstants.EventSource.RESPONSE_CONTENT)
-                                            .setEventData(optimizeErrorEventData)
-                                            .build();
-
-                            MobileCore.dispatchEvent(optimizeErrorEvent);
+                            getApi().dispatch(
+                                            createResponseEventWithError(event, aepOptimizeError));
 
                             eventsDispatcher.resume();
                         }
@@ -890,6 +876,19 @@ class OptimizeExtension extends Extension {
     private Event createResponseEventWithError(final Event event, final AdobeError error) {
         final Map<String, Object> eventData = new HashMap<>();
         eventData.put(OptimizeConstants.EventDataKeys.RESPONSE_ERROR, error.getErrorCode());
+
+        return new Event.Builder(
+                        OptimizeConstants.EventNames.OPTIMIZE_RESPONSE,
+                        OptimizeConstants.EventType.OPTIMIZE,
+                        OptimizeConstants.EventSource.RESPONSE_CONTENT)
+                .setEventData(eventData)
+                .inResponseToEvent(event)
+                .build();
+    }
+
+    private Event createResponseEventWithError(final Event event, final AEPOptimizeError error) {
+        final Map<String, Object> eventData = new HashMap<>();
+        eventData.put(OptimizeConstants.EventDataKeys.RESPONSE_ERROR, error);
 
         return new Event.Builder(
                         OptimizeConstants.EventNames.OPTIMIZE_RESPONSE,

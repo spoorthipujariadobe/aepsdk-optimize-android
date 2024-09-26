@@ -76,6 +76,33 @@ public class OptimizeFunctionalTests {
         Assert.assertEquals(OptimizeTestConstants.EXTENSION_VERSION, Optimize.extensionVersion());
     }
 
+    @Test
+    public void testUpdatePropositions_timeoutError() throws Exception {
+        // Setup
+        final String decisionScopeName = "decisionScope";
+        Map<String, Object> configData = new HashMap<>();
+        configData.put("edge.configId", "ffffffff-ffff-ffff-ffff-ffffffffffff");
+        updateConfiguration(configData);
+
+        // Action
+        Optimize.updatePropositions(
+                Collections.singletonList(new DecisionScope(decisionScopeName)),
+                null,
+                null,
+                new AdobeCallbackWithError<Map<DecisionScope, OptimizeProposition>>() {
+                    @Override
+                    public void fail(AdobeError adobeError) {
+                        Assert.fail("Update/Get proposition request resulted in a timeout.");
+                    }
+
+                    @Override
+                    public void call(
+                            Map<DecisionScope, OptimizeProposition> decisionScopePropositionMap) {
+                        Assert.assertNull(decisionScopePropositionMap);
+                    }
+                });
+    }
+
     // 2a
     @Test
     public void testUpdatePropositions_validDecisionScope() throws InterruptedException {
@@ -1212,9 +1239,7 @@ public class OptimizeFunctionalTests {
 
         Assert.assertNotNull(optimizeResponseEventsList);
 
-        // 1 additional event is being sent from handleUpdatePropositions() to provide callback for
-        // updatePropositons()
-        Assert.assertEquals(2, optimizeResponseEventsList.size());
+        Assert.assertEquals(1, optimizeResponseEventsList.size());
 
         Assert.assertEquals(1, propositionMap.size());
 
