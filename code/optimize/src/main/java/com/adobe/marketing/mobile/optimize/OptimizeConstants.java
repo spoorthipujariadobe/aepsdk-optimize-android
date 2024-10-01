@@ -18,6 +18,10 @@ class OptimizeConstants {
     static final String FRIENDLY_NAME = "Optimize";
     static final long DEFAULT_RESPONSE_CALLBACK_TIMEOUT = 500L;
     static final long GET_RESPONSE_CALLBACK_TIMEOUT = 10000L;
+    // keeping this value slightly higher so that the
+    // update response callback does not timeout before the Edge event times out
+    // mainly for testing purposes, please adjust as you see fit
+    static final long UPDATE_RESPONSE_CALLBACK_TIMEOUT = 11000L;
     static final long EDGE_CONTENT_COMPLETE_RESPONSE_TIMEOUT = 10000L;
 
     static final String ACTIVITY_ID = "activityId";

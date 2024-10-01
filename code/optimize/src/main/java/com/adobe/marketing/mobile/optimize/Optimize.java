@@ -148,7 +148,7 @@ public class Optimize {
 
         MobileCore.dispatchEventWithResponseCallback(
                 event,
-                OptimizeConstants.EDGE_CONTENT_COMPLETE_RESPONSE_TIMEOUT,
+                OptimizeConstants.UPDATE_RESPONSE_CALLBACK_TIMEOUT,
                 new AdobeCallbackWithError<Event>() {
                     @Override
                     public void fail(final AdobeError adobeError) {
